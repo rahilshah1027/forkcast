@@ -4,10 +4,24 @@
         <meta charset="utf-8">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-        <title>Home</title>
-    </head>
+        <link rel="stylesheet" href="templates/styles.css">
+        <title>Login</title>
     <body>
-        <h1> Login Authentication </h1>
+        <div class="container">
+            <h2>Login</h2>
+            <form action="/login" method="POST">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        <p> Don't have an account? </p>
+        <a href="/register"><button type="">Register</button></a>
     </body>
 </html>
