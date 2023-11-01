@@ -6,7 +6,6 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, session, url_for, redirect
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, current_user, login_user, logout_user, login_required
 
 #password = b"hellohihi"
@@ -26,7 +25,7 @@ login_manager.login_view = "login"
 @login_manager.user_loader
 def load_user(user_id):
     cur = connection.cursor()
-    cur.execute("SELECT username FROM users WHERE id = %s", (user_id,))
+    cur.execute("SELECT username FROM users WHERE id = %s", (int(user_id,)))
     user = cur.fetchone()
     cur.close()
     return user
@@ -56,7 +55,7 @@ class RegisterForm(FlaskForm):
     def validate_username(self, username):
         connection = psycopg2.connect(url)
         cur = connection.cursor()
-        cur.execute("SELECT username FROM users WHERE username = %s", (username,))
+        cur.execute("SELECT username FROM users WHERE username = %s", (str(username,)))
         existing_user = cur.fetchone()
         if existing_user:
             raise ValidationError(
@@ -89,14 +88,17 @@ def login():
     cur = connection.cursor()
     login = LoginForm()
     if login.validate_on_submit():
-        cur.execute("SELECT username FROM users WHERE username = %s", (login.username,))
+        cur.execute("SELECT username FROM users WHERE username = %s", (str(login.username),))
         cur_user = cur.fetchone()
+        print(cur_user)
         if cur_user:
             cur.execute("SELECT password FROM users WHERE password = %s", (login.password,))
             if bcrypt.checkpw(login.password.encode("utf-8"), cur.fetchone()):
                 login_user(cur_user)
                 cur.close()
                 return redirect(url_for("dashboard", data=login.username))
+        else:
+            print("username or password doesnt exist please register")
     return render_template("login.html", login=login)
 
 @app.route("/dashboard")
